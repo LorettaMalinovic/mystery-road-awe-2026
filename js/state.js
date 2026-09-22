@@ -30,7 +30,7 @@ export const viewRendered = {
   evidence: false,
   people: false,
   timeline: false,
-  workspace: false
+  workspace: false,
 };
 
 export const state = {
@@ -46,5 +46,5 @@ export const state = {
   currentPeopleTab: "people",
   loadingStepsRemaining: 2,
   evidenceViewLoading: true,
-  notesStore: {}
+  notesStore: {},
 };

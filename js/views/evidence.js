@@ -7,12 +7,12 @@ import {
   findPersonById,
   formatDate,
   getRelevanceBadgeClass,
-  getStatusBadgeClass
+  getStatusBadgeClass,
 } from "../utils.js";
 import {
   loadNoteForEvidence,
   saveBookmarksToStorage,
-  saveNoteForEvidence
+  saveNoteForEvidence,
 } from "../storage.js";
 
 let latestSearchRequestId = 0;
@@ -56,17 +56,26 @@ export const populateEvidenceDropdowns = () => {
   }
   typeSelect.innerHTML = '<option value="">All types</option>';
   for (const typeName of types) {
-    typeSelect.innerHTML += '<option value="' + typeName + '">' + typeName + "</option>";
+    typeSelect.innerHTML +=
+      '<option value="' + typeName + '">' + typeName + "</option>";
   }
 
   personSelect.innerHTML = '<option value="">All people</option>';
   for (const person of state.allPeople) {
-    personSelect.innerHTML += '<option value="' + person.id + '">' + person.name + "</option>";
+    personSelect.innerHTML +=
+      '<option value="' + person.id + '">' + person.name + "</option>";
   }
 
   locationSelect.innerHTML = '<option value="">All locations</option>';
   for (const loc of state.allLocations) {
-    locationSelect.innerHTML += '<option value="' + loc.id + '">' + loc.id + " - " + loc.name + "</option>";
+    locationSelect.innerHTML +=
+      '<option value="' +
+      loc.id +
+      '">' +
+      loc.id +
+      " - " +
+      loc.name +
+      "</option>";
   }
 };
 
@@ -84,17 +93,31 @@ const getFilteredEvidence = () => {
     let matches = true;
 
     if (searchTerm) {
-      const haystack = (item.title + " " + item.summary + " " + item.tags.join(" ")).toLowerCase();
+      const haystack = (
+        item.title +
+        " " +
+        item.summary +
+        " " +
+        item.tags.join(" ")
+      ).toLowerCase();
       if (haystack.indexOf(searchTerm) === -1) matches = false;
     }
-    if (matches && typeVal && item.type.toLowerCase() !== typeVal) matches = false;
+    if (matches && typeVal && item.type.toLowerCase() !== typeVal)
+      matches = false;
     if (matches && personVal) {
       const person = findPersonById(personVal);
       if (!person || !evidenceMentionsPerson(item, person)) matches = false;
     }
-    if (matches && locationVal && item.locationIds.indexOf(locationVal) === -1) matches = false;
-    if (matches && statusVal && (item.status || "").toLowerCase() !== statusVal) matches = false;
-    if (matches && relevanceVal && (item.relevance || "").toLowerCase() !== relevanceVal) matches = false;
+    if (matches && locationVal && item.locationIds.indexOf(locationVal) === -1)
+      matches = false;
+    if (matches && statusVal && (item.status || "").toLowerCase() !== statusVal)
+      matches = false;
+    if (
+      matches &&
+      relevanceVal &&
+      (item.relevance || "").toLowerCase() !== relevanceVal
+    )
+      matches = false;
 
     if (matches) results.push(item);
   }
@@ -106,16 +129,42 @@ const getFilteredEvidence = () => {
 const renderEvidenceCardHTML = (ev) => {
   const isBookmarked = state.bookmarks.indexOf(ev.id) !== -1;
   let html = '<div class="evidence-card" data-id="' + ev.id + '">';
-  html += '<button class="bookmark-btn ' + (isBookmarked ? "active" : "") + '" data-action="bookmark" data-id="' + ev.id + '" aria-label="Toggle bookmark for ' + ev.title + '"><span class="bookmark-icon">' + (isBookmarked ? "★" : "☆") + "</span></button>";
+  html +=
+    '<button class="bookmark-btn ' +
+    (isBookmarked ? "active" : "") +
+    '" data-action="bookmark" data-id="' +
+    ev.id +
+    '" aria-label="Toggle bookmark for ' +
+    ev.title +
+    '"><span class="bookmark-icon">' +
+    (isBookmarked ? "★" : "☆") +
+    "</span></button>";
   html += "<h3>" + ev.title + "</h3>";
-  html += '<div class="evidence-meta">' + ev.id + " &middot; " + ev.type + " &middot; " + formatDate(ev.timestamp) + "</div>";
+  html +=
+    '<div class="evidence-meta">' +
+    ev.id +
+    " &middot; " +
+    ev.type +
+    " &middot; " +
+    formatDate(ev.timestamp) +
+    "</div>";
   html += '<div class="evidence-summary">' + ev.summary + "</div>";
 
   if (ev.tags.indexOf("critical") !== -1) {
     html += '<span class="badge badge-critical">Critical</span>';
   }
-  html += '<span class="badge ' + getStatusBadgeClass(ev.status) + '">' + ev.status + "</span>";
-  html += '<span class="badge ' + getRelevanceBadgeClass(ev.relevance) + '">' + ev.relevance + "</span>";
+  html +=
+    '<span class="badge ' +
+    getStatusBadgeClass(ev.status) +
+    '">' +
+    ev.status +
+    "</span>";
+  html +=
+    '<span class="badge ' +
+    getRelevanceBadgeClass(ev.relevance) +
+    '">' +
+    ev.relevance +
+    "</span>";
   html += "<div>";
   for (const tag of ev.tags) {
     html += '<span class="tag-chip">' + tag + "</span>";
@@ -259,19 +308,38 @@ function renderEvidenceDetail(ev) {
   let html = "";
   html += '<div class="evidence-detail-header">';
   html += "<div><h2>" + ev.title + "</h2>";
-  html += '<div class="evidence-meta">' + ev.id + " &middot; " + ev.type + " &middot; " + formatDate(ev.timestamp) + "</div></div>";
-  html += '<button type="button" class="btn btn-secondary btn-small" onclick="closeEvidenceDetail()">Close</button>';
+  html +=
+    '<div class="evidence-meta">' +
+    ev.id +
+    " &middot; " +
+    ev.type +
+    " &middot; " +
+    formatDate(ev.timestamp) +
+    "</div></div>";
+  html +=
+    '<button type="button" class="btn btn-secondary btn-small" onclick="closeEvidenceDetail()">Close</button>';
   html += "</div>";
 
   if (ev.tags.indexOf("critical") !== -1) {
-    html += '<div class="warning-banner">This item is tagged as critical evidence.</div>';
+    html +=
+      '<div class="warning-banner">This item is tagged as critical evidence.</div>';
   }
 
-  html += '<div class="detail-field"><strong>Summary</strong>' + ev.summary + "</div>";
+  html +=
+    '<div class="detail-field"><strong>Summary</strong>' +
+    ev.summary +
+    "</div>";
   html += '<div class="evidence-detail-content">' + ev.content + "</div>";
-  html += '<div class="detail-field"><strong>Related people</strong>' + personNames.join(", ") + "</div>";
-  html += '<div class="detail-field"><strong>Related locations</strong>' + locationNames.join(", ") + "</div>";
-  html += '<div class="detail-field"><strong>Tags</strong>' + tagsHtml + "</div>";
+  html +=
+    '<div class="detail-field"><strong>Related people</strong>' +
+    personNames.join(", ") +
+    "</div>";
+  html +=
+    '<div class="detail-field"><strong>Related locations</strong>' +
+    locationNames.join(", ") +
+    "</div>";
+  html +=
+    '<div class="detail-field"><strong>Tags</strong>' + tagsHtml + "</div>";
 
   html += '<div class="detail-field"><strong>Review status</strong>';
   html += '<select id="detailStatusSelect">';
@@ -288,25 +356,36 @@ function renderEvidenceDetail(ev) {
   html += "</select></div>";
 
   html += '<div class="detail-field"><strong>Investigator note</strong>';
-  html += '<textarea id="evidenceNoteInput" class="note-textarea" rows="3" data-evidence-id="' + ev.id + '" placeholder="Add a private note about this evidence...">' + escapeHtml(storedNote) + "</textarea>";
-  html += '<button type="button" class="btn btn-primary btn-small" style="margin-top:6px;" onclick="saveCurrentNote()">Save note</button>';
+  html +=
+    '<textarea id="evidenceNoteInput" class="note-textarea" rows="3" data-evidence-id="' +
+    ev.id +
+    '" placeholder="Add a private note about this evidence...">' +
+    escapeHtml(storedNote) +
+    "</textarea>";
+  html +=
+    '<button type="button" class="btn btn-primary btn-small" style="margin-top:6px;" onclick="saveCurrentNote()">Save note</button>';
   html += "</div>";
 
-  html += '<div class="detail-field"><strong>Note preview</strong><div id="notePreview"></div></div>';
+  html +=
+    '<div class="detail-field"><strong>Note preview</strong><div id="notePreview"></div></div>';
 
   section.innerHTML = html;
   document.getElementById("notePreview").textContent = storedNote;
 
-  document.getElementById("detailStatusSelect").addEventListener("change", (e) => {
-    ev.status = e.target.value;
-    renderEvidenceDetail(ev);
-    if (viewRendered.evidence) renderEvidenceList();
-  });
-  document.getElementById("detailRelevanceSelect").addEventListener("change", (e) => {
-    ev.relevance = e.target.value;
-    renderEvidenceDetail(ev);
-    if (viewRendered.evidence) renderEvidenceList();
-  });
+  document
+    .getElementById("detailStatusSelect")
+    .addEventListener("change", (e) => {
+      ev.status = e.target.value;
+      renderEvidenceDetail(ev);
+      if (viewRendered.evidence) renderEvidenceList();
+    });
+  document
+    .getElementById("detailRelevanceSelect")
+    .addEventListener("change", (e) => {
+      ev.relevance = e.target.value;
+      renderEvidenceDetail(ev);
+      if (viewRendered.evidence) renderEvidenceList();
+    });
 }
 
 export function openEvidenceDetail(evidenceId) {
@@ -322,19 +401,35 @@ export function openEvidenceDetail(evidenceId) {
 }
 
 export const setupEvidenceListeners = () => {
-  document.getElementById("evidenceSearch").addEventListener("input", handleSearchInput);
-  document.getElementById("filterType").addEventListener("change", renderEvidenceList);
-  document.getElementById("filterPerson").addEventListener("change", renderEvidenceList);
-  document.getElementById("filterLocation").addEventListener("change", renderEvidenceList);
-  document.getElementById("filterStatus").addEventListener("change", renderEvidenceList);
-  document.getElementById("filterRelevance").addEventListener("change", renderEvidenceList);
+  document
+    .getElementById("evidenceSearch")
+    .addEventListener("input", handleSearchInput);
+  document
+    .getElementById("filterType")
+    .addEventListener("change", renderEvidenceList);
+  document
+    .getElementById("filterPerson")
+    .addEventListener("change", renderEvidenceList);
+  document
+    .getElementById("filterLocation")
+    .addEventListener("change", renderEvidenceList);
+  document
+    .getElementById("filterStatus")
+    .addEventListener("change", renderEvidenceList);
+  document
+    .getElementById("filterRelevance")
+    .addEventListener("change", renderEvidenceList);
   // Original: document.getElementById("filterStatus").setAttribute("onchange", "renderEvidenceList()");
   // (doppelt mit addEventListener — auskommentiert)
   // Sort bleibt per HTML onchange="handleSortChange()" in index.html.
-  document.getElementById("clearFiltersBtn").addEventListener("click", clearFilters);
+  document
+    .getElementById("clearFiltersBtn")
+    .addEventListener("click", clearFilters);
 
   if (!evidenceListListenerBound) {
-    document.getElementById("evidenceList").addEventListener("click", handleEvidenceListClick);
+    document
+      .getElementById("evidenceList")
+      .addEventListener("click", handleEvidenceListClick);
     evidenceListListenerBound = true;
   }
 };

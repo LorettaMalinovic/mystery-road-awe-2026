@@ -8,19 +8,19 @@ Current entry point: `js/main.js`, loaded as an ES module from `index.html`.
 
 ## Module map (Demo 1)
 
-| Module | Responsibility | Public API (exported) |
-|---|---|---|
-| `js/state.js` | Shared application state | `state`, `viewRendered`, storage key constants |
-| `js/utils.js` | Lookups, date formatting, badges, HTML escaping | named helpers only |
-| `js/storage.js` | `localStorage` read/write for bookmarks, notes, hypothesis | load/save helpers |
-| `js/router.js` | Hash navigation | `navigateTo` |
-| `js/data.js` | Sequential `fetch` of JSON case files | `loadAllData` and the three loaders |
-| `js/views/dashboard.js` | Dashboard rendering | `renderDashboard` |
-| `js/views/evidence.js` | Catalogue, filters, sort, detail, bookmarks | render + listener setup |
-| `js/views/people.js` | People / locations tabs | render + `switchPeopleTab` |
-| `js/views/timeline.js` | Timeline + evidence quick-view modal | render + modal |
-| `js/views/workspace.js` | Bookmarks list, notes, hypothesis form | render + `saveHypothesis` |
-| `js/main.js` | Startup, hash routing, wiring listeners | nothing (entry point) |
+| Module                  | Responsibility                                             | Public API (exported)                          |
+| ----------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| `js/state.js`           | Shared application state                                   | `state`, `viewRendered`, storage key constants |
+| `js/utils.js`           | Lookups, date formatting, badges, HTML escaping            | named helpers only                             |
+| `js/storage.js`         | `localStorage` read/write for bookmarks, notes, hypothesis | load/save helpers                              |
+| `js/router.js`          | Hash navigation                                            | `navigateTo`                                   |
+| `js/data.js`            | Sequential `fetch` of JSON case files                      | `loadAllData` and the three loaders            |
+| `js/views/dashboard.js` | Dashboard rendering                                        | `renderDashboard`                              |
+| `js/views/evidence.js`  | Catalogue, filters, sort, detail, bookmarks                | render + listener setup                        |
+| `js/views/people.js`    | People / locations tabs                                    | render + `switchPeopleTab`                     |
+| `js/views/timeline.js`  | Timeline + evidence quick-view modal                       | render + modal                                 |
+| `js/views/workspace.js` | Bookmarks list, notes, hypothesis form                     | render + `saveHypothesis`                      |
+| `js/main.js`            | Startup, hash routing, wiring listeners                    | nothing (entry point)                          |
 
 What stays private: filter internals, card HTML builders, modal close helper,
 search-request IDs, overlay helpers. Other modules never import those.
@@ -37,7 +37,7 @@ of the split, not a new feature.
 
 **Classic `<script>` vs `<script type="module">` (two differences that matter here)**
 
-1. **Scope / globals.** A classic script shares the global object. `function navigateTo` became `window.navigateTo`, which is why the HTML `onclick` attributes worked. A module has its own scope. After the split, `navigateTo` is invisible to inline handlers unless we `export` it *and* import it, or assign it to `window`. We chose listeners instead of restoring globals.
+1. **Scope / globals.** A classic script shares the global object. `function navigateTo` became `window.navigateTo`, which is why the HTML `onclick` attributes worked. A module has its own scope. After the split, `navigateTo` is invisible to inline handlers unless we `export` it _and_ import it, or assign it to `window`. We chose listeners instead of restoring globals.
 2. **Strict mode + defer.** Modules are always strict (`this` at top level is `undefined`; assigning an undeclared variable throws). They are also deferred: the browser finishes parsing HTML, then runs the module. Combined with `fetch()`, both classic and module versions still need HTTP. The extra module-only restriction is CORS: browsers refuse ES modules from `file://` even when some classic scripts would run.
 
 **`allEvidence` after the split**
@@ -46,11 +46,11 @@ Before: `var allEvidence` was a global, readable and writable from anywhere (and
 
 After: it lives at `state.allEvidence` in `js/state.js`. Another module must `import { state } from "./state.js"`. If you forget the import and write `allEvidence`, you get `ReferenceError: allEvidence is not defined`. That error is useful: it fails immediately instead of silently creating an accidental global (classic sloppy mode) or reading stale data.
 
-Imported ES-module bindings are *live* but *read-only* from the importing file. `import { allEvidence }` plus `allEvidence = []` would throw `TypeError: Assignment to constant variable`. Mutating through a shared object (`state.allEvidence = data`) is allowed, which is why state is one object rather than a pile of `export let` bindings.
+Imported ES-module bindings are _live_ but _read-only_ from the importing file. `import { allEvidence }` plus `allEvidence = []` would throw `TypeError: Assignment to constant variable`. Mutating through a shared object (`state.allEvidence = data`) is allowed, which is why state is one object rather than a pile of `export let` bindings.
 
 **Named vs default export**
 
-Everything here is a **named export**. Example: `export function renderDashboard()` in `dashboard.js`. A default export (`export default function...`) would imply “this module *is* one thing”. View modules export several functions (`renderEvidenceList`, `openEvidenceDetail`, `setupEvidenceListeners`), so named exports match the API. `navigateTo` is a named export from a one-function module on purpose — if we later add `replaceView()`, we will not have to rewrite every import from `import navigateTo from ...` to a namespace import.
+Everything here is a **named export**. Example: `export function renderDashboard()` in `dashboard.js`. A default export (`export default function...`) would imply “this module _is_ one thing”. View modules export several functions (`renderEvidenceList`, `openEvidenceDetail`, `setupEvidenceListeners`), so named exports match the API. `navigateTo` is a named export from a one-function module on purpose — if we later add `replaceView()`, we will not have to rewrite every import from `import navigateTo from ...` to a namespace import.
 
 **Why `file://` fails for `type="module"`**
 
@@ -92,9 +92,9 @@ filteredEvidence.sort(...);              // sorts allEvidence too
 
 ### Questions
 
-**Reference vs copy.** A variable holding an object/array stores a pointer to the heap object, not a snapshot. `b = a` makes two names for one array. `a.slice()` / `[...a]` makes a new array (shallow: the evidence *objects* inside are still shared, which is what we want for status edits). The bug was “two names, one array”.
+**Reference vs copy.** A variable holding an object/array stores a pointer to the heap object, not a snapshot. `b = a` makes two names for one array. `a.slice()` / `[...a]` makes a new array (shallow: the evidence _objects_ inside are still shared, which is what we want for status edits). The bug was “two names, one array”.
 
-**Could you have found it by reading top-to-bottom?** You could *suspect* it from `filteredEvidence = allEvidence` plus `.sort()`, but the user-visible damage is on another view after a later click. Running the app is how you notice the dashboard is lying; the code read is how you confirm why.
+**Could you have found it by reading top-to-bottom?** You could _suspect_ it from `filteredEvidence = allEvidence` plus `.sort()`, but the user-visible damage is on another view after a later click. Running the app is how you notice the dashboard is lying; the code read is how you confirm why.
 
 ---
 
@@ -166,23 +166,23 @@ Removed the broken debug listeners. Navigation is `document.querySelectorAll("[d
 
 ### Question
 
-Nothing looked broken because the TypeError happened in a listener that did not own navigation. “Looks fine” only means the happy path of the UI; the console is part of the product’s health. A later refactor that removed the `onclick` attributes would have made this the *only* click handler — then navigation would have died.
+Nothing looked broken because the TypeError happened in a listener that did not own navigation. “Looks fine” only means the happy path of the UI; the console is part of the product’s health. A later refactor that removed the `onclick` attributes would have made this the _only_ click handler — then navigation would have died.
 
 ---
 
 ## Demo 5 — Full walkthrough (additional bugs)
 
-| # | Repro | Expected | Actual | Cause | Fix | Verify |
-|---|---|---|---|---|---|---|
-| A | Filter or search on Evidence, then click the star | Bookmark toggles once | After N re-renders, star toggles N times (even N → appears stuck) | `renderEvidenceList` called `addEventListener("click", …)` every time | Bind the delegated listener once in `setupEvidenceListeners` | Filter several times, bookmark E01; star and workspace stay in sync |
-| B | Timeline → open the same evidence modal 3×, then “Open full evidence” | One navigation | Multiple hash changes / duplicate opens; console `modal opened, active close listeners: 3` | New click listener on the modal every open; never removed | Bind one listener when the modal element is created | Open/close 5×, then Open full — single detail view |
-| C | Timeline event “Location:” | Human-readable place names | `[object Object]` | `eventLocationNames.push(evtLoc)` pushed the whole location object | Push `evtLoc.id + " - " + evtLoc.name` | Every event shows `L0x - …` |
-| D | Application tab: set `remotion_notes` or `remotion_hypothesis` to `not-json`, reload | App still starts | Notes parse threw; hypothesis `JSON.parse` threw; init aborted | `loadNotesFromStorage` / `loadHypothesisFromStorage` had no `try/catch` (bookmarks already did) | Catch, warn, start empty / skip draft | Corrupt key, reload, dashboard appears |
-| E | Evidence note: `<img src=x onerror=alert(1)>`, save, look at preview + Workspace notes | Text shown as text | Preview executed HTML (`innerHTML`) | User notes written with `innerHTML` | `textContent` / `escapeHtml` | Payload shows as characters, no alert |
-| F | Hash change | One view update | `handleHashChange` ran twice | Listener registered in `setupEventListeners` **and** again at the bottom of `app.js` | Register once in `main.js` | Breakpoint in `handleHashChange` fires once per navigation |
-| G | Status filter: change the dropdown | List filters once | Could fire twice | Both `addEventListener("change")` and `setAttribute("onchange", "renderEvidenceList()")` | Only `addEventListener` | Change Unreviewed → one render |
-| I | Bookmark an item, then open Dashboard | Bookmarked stat increments | Stat stayed at 0 | Dashboard rendered once (`viewRendered.dashboard`) and never again | Re-render dashboard every time that view is shown | Bookmark E01, open Dashboard, stat is 1 |
-| H | Network: fail `case.json` | Overlay eventually hides | Overlay could stick (`loadingStepsRemaining` never decremented on core failure) | Nested fetch had no `catch`; only timeline `finally` decremented | `try/catch` around core load + `hideLoadingStep`; `readJson` throws on `!res.ok` | (DevTools block URL, reload — overlay clears) |
+| #   | Repro                                                                                  | Expected                   | Actual                                                                                     | Cause                                                                                           | Fix                                                                              | Verify                                                              |
+| --- | -------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| A   | Filter or search on Evidence, then click the star                                      | Bookmark toggles once      | After N re-renders, star toggles N times (even N → appears stuck)                          | `renderEvidenceList` called `addEventListener("click", …)` every time                           | Bind the delegated listener once in `setupEvidenceListeners`                     | Filter several times, bookmark E01; star and workspace stay in sync |
+| B   | Timeline → open the same evidence modal 3×, then “Open full evidence”                  | One navigation             | Multiple hash changes / duplicate opens; console `modal opened, active close listeners: 3` | New click listener on the modal every open; never removed                                       | Bind one listener when the modal element is created                              | Open/close 5×, then Open full — single detail view                  |
+| C   | Timeline event “Location:”                                                             | Human-readable place names | `[object Object]`                                                                          | `eventLocationNames.push(evtLoc)` pushed the whole location object                              | Push `evtLoc.id + " - " + evtLoc.name`                                           | Every event shows `L0x - …`                                         |
+| D   | Application tab: set `remotion_notes` or `remotion_hypothesis` to `not-json`, reload   | App still starts           | Notes parse threw; hypothesis `JSON.parse` threw; init aborted                             | `loadNotesFromStorage` / `loadHypothesisFromStorage` had no `try/catch` (bookmarks already did) | Catch, warn, start empty / skip draft                                            | Corrupt key, reload, dashboard appears                              |
+| E   | Evidence note: `<img src=x onerror=alert(1)>`, save, look at preview + Workspace notes | Text shown as text         | Preview executed HTML (`innerHTML`)                                                        | User notes written with `innerHTML`                                                             | `textContent` / `escapeHtml`                                                     | Payload shows as characters, no alert                               |
+| F   | Hash change                                                                            | One view update            | `handleHashChange` ran twice                                                               | Listener registered in `setupEventListeners` **and** again at the bottom of `app.js`            | Register once in `main.js`                                                       | Breakpoint in `handleHashChange` fires once per navigation          |
+| G   | Status filter: change the dropdown                                                     | List filters once          | Could fire twice                                                                           | Both `addEventListener("change")` and `setAttribute("onchange", "renderEvidenceList()")`        | Only `addEventListener`                                                          | Change Unreviewed → one render                                      |
+| I   | Bookmark an item, then open Dashboard                                                  | Bookmarked stat increments | Stat stayed at 0                                                                           | Dashboard rendered once (`viewRendered.dashboard`) and never again                              | Re-render dashboard every time that view is shown                                | Bookmark E01, open Dashboard, stat is 1                             |
+| H   | Network: fail `case.json`                                                              | Overlay eventually hides   | Overlay could stick (`loadingStepsRemaining` never decremented on core failure)            | Nested fetch had no `catch`; only timeline `finally` decremented                                | `try/catch` around core load + `hideLoadingStep`; `readJson` throws on `!res.ok` | (DevTools block URL, reload — overlay clears)                       |
 
 **Live demo pick:** Demo 3 (evidence spinner) is the clearest before/after. Demo 2 (sort mutates dashboard) is the best “reference vs copy” story. Commit the parent of the bugfix (original `app.js`) and diff against this tree.
 
@@ -190,7 +190,7 @@ Nothing looked broken because the TypeError happened in a listener that did not 
 
 - Fixing the sort mutation (Demo 2) did **not** hide the spinner (Demo 3); they touch different variables.
 - Removing extra evidence click listeners (A) made bookmark-after-sort reliable; before that, Demo 2’s re-render could make Demo A worse (more listeners after each sort).
-- Modal listener leak (B) was independent of the nav `var i` leak (Demo 4). Same *class* of bug (listener lifetime), different objects.
+- Modal listener leak (B) was independent of the nav `var i` leak (Demo 4). Same _class_ of bug (listener lifetime), different objects.
 - Isolated by reproducing each bug on a clean reload after each fix.
 
 ---
@@ -201,21 +201,21 @@ Use the **original** spinner bug or the sort bug.
 
 1. Sources → `js/views/evidence.js` → breakpoint on the first line of `renderEvidenceList` (or `js/data.js` inside `loadEvidenceData` after `await readJson`).
 2. Reload. **Step over** the DOM lookups, **step into** `getFilteredEvidence` / `sortEvidenceCopy`, **step out** back to the renderer.
-3. Call stack while paused in `sortEvidenceCopy`: `getFilteredEvidence` ← `renderEvidenceList` ← `handleHashChange` / `loadEvidenceData`. That tells you *who* asked for a list and whether evidence had finished loading.
-4. Conditional breakpoint on the `for (const item of state.allEvidence)` loop: `item.id === "E04"` (E04 stores a person *name* instead of an id — good probe for `evidenceMentionsPerson`).
+3. Call stack while paused in `sortEvidenceCopy`: `getFilteredEvidence` ← `renderEvidenceList` ← `handleHashChange` / `loadEvidenceData`. That tells you _who_ asked for a list and whether evidence had finished loading.
+4. Conditional breakpoint on the `for (const item of state.allEvidence)` loop: `item.id === "E04"` (E04 stores a person _name_ instead of an id — good probe for `evidenceMentionsPerson`).
 5. While paused, Watch `state.evidenceViewLoading`. In the original code it stays `true`; flip it to `false` in the console to test the hypothesis before editing the source.
 
 ### Questions
 
-**Step over vs step into.** Over runs a call as one step; into enters it. Stepping *into* `formatDate` from a timeline loop wastes time — you already trust date formatting. Step into `getFilteredEvidence` when you care why an item disappeared.
+**Step over vs step into.** Over runs a call as one step; into enters it. Stepping _into_ `formatDate` from a timeline loop wastes time — you already trust date formatting. Step into `getFilteredEvidence` when you care why an item disappeared.
 
-**Call stack.** The list of frames that have not returned yet. It answers “why am I in this function *now*?” For the spinner: `renderEvidenceList` was called from `handleHashChange` *before* the evidence Promise resolved.
+**Call stack.** The list of frames that have not returned yet. It answers “why am I in this function _now_?” For the spinner: `renderEvidenceList` was called from `handleHashChange` _before_ the evidence Promise resolved.
 
 **Conditional breakpoint.** Pauses only when the expression is true. Faster than hitting Resume 16 times until `id === "E04"`.
 
 **DevTools breakpoint vs `debugger;`.** UI breakpoints are local to your machine and can be conditional/logpoints. `debugger;` is in source, hits for everyone, easy to forget in a commit. Prefer UI breakpoints for investigation; use `debugger;` only for a short, shared “pause here” that you will delete.
 
-**When `console.log` is not enough.** Logging `evidenceViewLoading` shows `true` forever, but not *which caller* rendered the empty list. The stack plus stepping shows `handleHashChange` painting too early and the fetch callback painting again still with the flag true.
+**When `console.log` is not enough.** Logging `evidenceViewLoading` shows `true` forever, but not _which caller_ rendered the empty list. The stack plus stepping shows `handleHashChange` painting too early and the fetch callback painting again still with the flag true.
 
 ---
 
@@ -227,11 +227,11 @@ Use the **original** spinner bug or the sort bug.
 
 **Application / Storage.** Keys:
 
-| Key | Purpose |
-|---|---|
-| `remotion_bookmarks` | JSON array of evidence ids |
-| `remotion_notes` | JSON object `{ evidenceId: text }` |
-| `remotion_hypothesis` | JSON draft of the workspace form |
+| Key                   | Purpose                            |
+| --------------------- | ---------------------------------- |
+| `remotion_bookmarks`  | JSON array of evidence ids         |
+| `remotion_notes`      | JSON object `{ evidenceId: text }` |
+| `remotion_hypothesis` | JSON draft of the workspace form   |
 
 Edit a bookmark id, reload → star state changes. Replace `remotion_notes` with `nope` → `JSON.parse` used to throw (init died); now a `console.warn` and empty notes. That is exactly the `try/catch` in `loadNotesFromStorage`.
 
@@ -253,7 +253,7 @@ Edit a bookmark id, reload → star state changes. Replace `remotion_notes` with
 
 `allEvidence`, `filteredEvidence`, `selectedEvidence`, `bookmarks`, `currentPage`, `allPeople`, `allLocations`, `allTimeline`, `caseData`, `currentPeopleTab`, `loadingStepsRemaining`, `evidenceViewLoading`, `viewRendered`, `notesStore`, `modalCloseListenerCount`, `STORAGE_KEY_*`, `latestSearchRequestId`.
 
-If two features both used `bookmarks` as a name (e.g. a future “bookmark timestamp” helper), the global `var` would share one binding. The module split already prevents that: storage and evidence import `state.bookmarks`; a new module that forgets to import gets a `ReferenceError` instead of aliasing the array. `viewRendered` as a shared object still *can* be mutated from anywhere that imports it — modules stop *accidental* globals, not *intentional* shared state.
+If two features both used `bookmarks` as a name (e.g. a future “bookmark timestamp” helper), the global `var` would share one binding. The module split already prevents that: storage and evidence import `state.bookmarks`; a new module that forgets to import gets a `ReferenceError` instead of aliasing the array. `viewRendered` as a shared object still _can_ be mutated from anywhere that imports it — modules stop _accidental_ globals, not _intentional_ shared state.
 
 ### `var` → `const` / `let`
 
@@ -332,9 +332,9 @@ Error handling: evidence still `try/catch` + `alert`; timeline `try/catch` + `co
 
 Reasons we would refuse an arrow here / in similar spots:
 
-1. **`this`.** Arrow functions close over lexical `this`. A handler written as `function () { this.classList.add("active"); }` (element as `this`) would break as an arrow (`this` would be `undefined` in the module). We do not use that pattern now; that is exactly why it is the example we would refuse if asked to convert *every* function.
+1. **`this`.** Arrow functions close over lexical `this`. A handler written as `function () { this.classList.add("active"); }` (element as `this`) would break as an arrow (`this` would be `undefined` in the module). We do not use that pattern now; that is exactly why it is the example we would refuse if asked to convert _every_ function.
 2. **Constructors / `arguments`.** No `new` usage in this app; the limitation did not block conversions. `arguments` is unused; we use rest params / explicit args.
-3. **Hoisting.** `function initApp() {}` is hoisted in its module. `const initApp = async () => {}` is in the TDZ until that line. We register `initApp` *after* its definition, so hoisting did not bite — but keeping the declaration makes the entry point obvious in the Call Stack (named function).
+3. **Hoisting.** `function initApp() {}` is hoisted in its module. `const initApp = async () => {}` is in the TDZ until that line. We register `initApp` _after_ its definition, so hoisting did not bite — but keeping the declaration makes the entry point obvious in the Call Stack (named function).
 
 ### Questions
 

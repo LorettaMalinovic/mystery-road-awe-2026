@@ -1,5 +1,9 @@
 import { state } from "./state.js";
-import { applyStoredBookmarkFlags, populateEvidenceDropdowns, renderEvidenceList } from "./views/evidence.js";
+import {
+  applyStoredBookmarkFlags,
+  populateEvidenceDropdowns,
+  renderEvidenceList,
+} from "./views/evidence.js";
 import { populateTimelineDropdowns, renderTimeline } from "./views/timeline.js";
 import { populateHypothesisDropdowns } from "./views/workspace.js";
 import { renderDashboard } from "./views/dashboard.js";

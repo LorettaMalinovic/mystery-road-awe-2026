@@ -6,7 +6,11 @@
 
 import { initApp } from "./js/main.js";
 import { navigateTo } from "./js/router.js";
-import { closeEvidenceDetail, handleSortChange, saveCurrentNote } from "./js/views/evidence.js";
+import {
+  closeEvidenceDetail,
+  handleSortChange,
+  saveCurrentNote,
+} from "./js/views/evidence.js";
 import { switchPeopleTab } from "./js/views/people.js";
 import { saveHypothesis } from "./js/views/workspace.js";
 
@@ -44,7 +48,7 @@ if (document.readyState === "loading") {
 // var caseData = {};
 //
 // var currentPeopleTab = "people";
-// var loadingStepsRemaining = 2; 
+// var loadingStepsRemaining = 2;
 //
 //
 // var evidenceViewLoading = true;
@@ -58,8 +62,8 @@ if (document.readyState === "loading") {
 //   workspace: false
 // };
 //
-// var notesStore = {}; 
-// var modalCloseListenerCount = 0; 
+// var notesStore = {};
+// var modalCloseListenerCount = 0;
 //
 // var STORAGE_KEY_BOOKMARKS = "remotion_bookmarks";
 // var STORAGE_KEY_NOTES = "remotion_notes";
@@ -116,7 +120,7 @@ if (document.readyState === "loading") {
 //     .then(function (data) {
 //       allEvidence = data;
 //       applyStoredBookmarkFlags();
-//       filteredEvidence = allEvidence; 
+//       filteredEvidence = allEvidence;
 //       renderDashboard();
 //       populateAllDropdowns();
 //       if (currentPage === "evidence") renderEvidenceList();
@@ -998,7 +1002,7 @@ if (document.readyState === "loading") {
 //   var raw = localStorage.getItem(STORAGE_KEY_HYPOTHESIS);
 //   if (!raw) return;
 //
-//   var draft = JSON.parse(raw); 
+//   var draft = JSON.parse(raw);
 //
 //   document.getElementById("hypSuspect").value = draft.suspectId || "";
 //   document.getElementById("hypNature").value = draft.nature || "";

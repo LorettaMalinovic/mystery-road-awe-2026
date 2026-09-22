@@ -22,13 +22,21 @@ export const populateHypothesisDropdowns = () => {
 
   suspectSelect.innerHTML = '<option value="">Select a person…</option>';
   for (const person of state.allPeople) {
-    suspectSelect.innerHTML += '<option value="' + person.id + '">' + person.name + "</option>";
+    suspectSelect.innerHTML +=
+      '<option value="' + person.id + '">' + person.name + "</option>";
   }
   suspectSelect.value = currentSuspect;
 
   evidenceSelect.innerHTML = "";
   for (const item of state.allEvidence) {
-    evidenceSelect.innerHTML += '<option value="' + item.id + '">' + item.id + " - " + item.title + "</option>";
+    evidenceSelect.innerHTML +=
+      '<option value="' +
+      item.id +
+      '">' +
+      item.id +
+      " - " +
+      item.title +
+      "</option>";
   }
   for (const option of evidenceSelect.options) {
     option.selected = currentEvidenceIds.indexOf(option.value) !== -1;
@@ -42,14 +50,21 @@ const renderBookmarksList = () => {
   const bookmarkedItems = state.allEvidence.filter((ev) => ev.bookmarked);
 
   if (bookmarkedItems.length === 0) {
-    container.innerHTML = "<p>No bookmarked evidence yet. Bookmark items from the Evidence view.</p>";
+    container.innerHTML =
+      "<p>No bookmarked evidence yet. Bookmark items from the Evidence view.</p>";
     return;
   }
 
   let html = "";
   for (const ev of bookmarkedItems) {
-    html += '<div class="mini-list-item"><strong>' + ev.id + "</strong> &mdash; " + ev.title +
-      ' <button type="button" class="btn btn-small btn-secondary" data-open-evidence="' + ev.id + '">Open</button></div>';
+    html +=
+      '<div class="mini-list-item"><strong>' +
+      ev.id +
+      "</strong> &mdash; " +
+      ev.title +
+      ' <button type="button" class="btn btn-small btn-secondary" data-open-evidence="' +
+      ev.id +
+      '">Open</button></div>';
   }
   container.innerHTML = html;
 
@@ -77,20 +92,30 @@ const renderNotesList = () => {
         index: i,
         evidenceId: state.allEvidence[i].id,
         title: state.allEvidence[i].title,
-        text: note
+        text: note,
       });
     }
   }
 
   if (noteEntries.length === 0) {
-    container.innerHTML = "<p>No notes yet. Add one from an evidence item's detail view.</p>";
+    container.innerHTML =
+      "<p>No notes yet. Add one from an evidence item's detail view.</p>";
     return;
   }
 
   let html = "";
   for (const entry of noteEntries) {
-    html += '<div class="mini-list-item"><strong>' + entry.evidenceId + "</strong> &mdash; " + escapeHtml(entry.title);
-    html += '<div id="noteText-' + entry.index + '">' + escapeHtml(entry.text) + "</div></div>";
+    html +=
+      '<div class="mini-list-item"><strong>' +
+      entry.evidenceId +
+      "</strong> &mdash; " +
+      escapeHtml(entry.title);
+    html +=
+      '<div id="noteText-' +
+      entry.index +
+      '">' +
+      escapeHtml(entry.text) +
+      "</div></div>";
   }
   container.innerHTML = html;
 };
@@ -102,7 +127,8 @@ const loadHypothesisFromStorage = () => {
   document.getElementById("hypSuspect").value = draft.suspectId || "";
   document.getElementById("hypNature").value = draft.nature || "";
   document.getElementById("hypConfidence").value = draft.confidence || 50;
-  document.getElementById("hypConfidenceValue").textContent = draft.confidence || 50;
+  document.getElementById("hypConfidenceValue").textContent =
+    draft.confidence || 50;
   document.getElementById("hypExplanation").value = draft.explanation || "";
   document.getElementById("hypAlternative").value = draft.alternative || "";
 
@@ -121,7 +147,7 @@ export const saveHypothesis = () => {
     confidence: document.getElementById("hypConfidence").value,
     explanation: document.getElementById("hypExplanation").value,
     alternative: document.getElementById("hypAlternative").value,
-    savedAt: new Date().toISOString()
+    savedAt: new Date().toISOString(),
   };
 
   try {
@@ -147,7 +173,9 @@ export function renderWorkspace() {
 }
 
 export const setupWorkspaceListeners = () => {
-  document.getElementById("saveHypothesisBtn").addEventListener("click", saveHypothesis);
+  document
+    .getElementById("saveHypothesisBtn")
+    .addEventListener("click", saveHypothesis);
   document.getElementById("hypConfidence").addEventListener("input", (e) => {
     document.getElementById("hypConfidenceValue").textContent = e.target.value;
   });

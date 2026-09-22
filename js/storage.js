@@ -2,7 +2,7 @@ import {
   STORAGE_KEY_BOOKMARKS,
   STORAGE_KEY_HYPOTHESIS,
   STORAGE_KEY_NOTES,
-  state
+  state,
 } from "./state.js";
 
 export const saveBookmarksToStorage = () => {
@@ -25,7 +25,8 @@ export const saveNoteForEvidence = (evidenceId, text) => {
   localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(state.notesStore));
 };
 
-export const loadNoteForEvidence = (evidenceId) => state.notesStore[evidenceId] || "";
+export const loadNoteForEvidence = (evidenceId) =>
+  state.notesStore[evidenceId] || "";
 
 export const loadNotesFromStorage = () => {
   const raw = localStorage.getItem(STORAGE_KEY_NOTES);
@@ -43,7 +44,8 @@ export const loadNotesFromStorage = () => {
   }
 };
 
-export const loadNoteAsync = async (evidenceId) => state.notesStore[evidenceId] || "";
+export const loadNoteAsync = async (evidenceId) =>
+  state.notesStore[evidenceId] || "";
 
 export const saveHypothesisDraft = (draft) => {
   localStorage.setItem(STORAGE_KEY_HYPOTHESIS, JSON.stringify(draft));

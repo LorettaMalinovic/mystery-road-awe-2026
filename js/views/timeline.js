@@ -11,12 +11,14 @@ export const populateTimelineDropdowns = () => {
 
   personSelect.innerHTML = '<option value="">All people</option>';
   for (const person of state.allPeople) {
-    personSelect.innerHTML += '<option value="' + person.id + '">' + person.name + "</option>";
+    personSelect.innerHTML +=
+      '<option value="' + person.id + '">' + person.name + "</option>";
   }
 
   locationSelect.innerHTML = '<option value="">All locations</option>';
   for (const loc of state.allLocations) {
-    locationSelect.innerHTML += '<option value="' + loc.id + '">' + loc.id + "</option>";
+    locationSelect.innerHTML +=
+      '<option value="' + loc.id + '">' + loc.id + "</option>";
   }
 
   const types = [];
@@ -25,7 +27,8 @@ export const populateTimelineDropdowns = () => {
   }
   typeSelect.innerHTML = '<option value="">All event types</option>';
   for (const typeName of types) {
-    typeSelect.innerHTML += '<option value="' + typeName + '">' + typeName + "</option>";
+    typeSelect.innerHTML +=
+      '<option value="' + typeName + '">' + typeName + "</option>";
   }
 };
 
@@ -51,10 +54,14 @@ export function openEvidenceModal(evidenceId) {
     modal.id = "quickViewModal";
     document.body.appendChild(modal);
     modal.addEventListener("click", (e) => {
-      if (e.target.classList.contains("modal-close-btn") || e.target.classList.contains("modal-backdrop")) {
+      if (
+        e.target.classList.contains("modal-close-btn") ||
+        e.target.classList.contains("modal-backdrop")
+      ) {
         closeEvidenceModal();
       }
-      const fullId = e.target.getAttribute && e.target.getAttribute("data-open-full");
+      const fullId =
+        e.target.getAttribute && e.target.getAttribute("data-open-full");
       if (fullId) {
         closeEvidenceModal();
         navigateTo("evidence");
@@ -68,10 +75,22 @@ export function openEvidenceModal(evidenceId) {
   modal.innerHTML =
     '<div class="modal-backdrop"><div class="modal-box">' +
     '<button type="button" class="modal-close-btn" aria-label="Close">&times;</button>' +
-    "<h3>" + ev.title + "</h3>" +
-    '<p class="evidence-meta">' + ev.id + " &middot; " + ev.type + " &middot; " + formatDate(ev.timestamp) + "</p>" +
-    "<p>" + ev.summary + "</p>" +
-    '<button type="button" class="btn btn-primary btn-small" data-open-full="' + ev.id + '">Open full evidence</button>' +
+    "<h3>" +
+    ev.title +
+    "</h3>" +
+    '<p class="evidence-meta">' +
+    ev.id +
+    " &middot; " +
+    ev.type +
+    " &middot; " +
+    formatDate(ev.timestamp) +
+    "</p>" +
+    "<p>" +
+    ev.summary +
+    "</p>" +
+    '<button type="button" class="btn btn-primary btn-small" data-open-full="' +
+    ev.id +
+    '">Open full evidence</button>' +
     "</div></div>";
 }
 
@@ -81,13 +100,16 @@ export function renderTimeline() {
 
   const order = document.getElementById("timelineOrder").value;
   const personFilter = document.getElementById("timelinePersonFilter").value;
-  const locationFilter = document.getElementById("timelineLocationFilter").value;
+  const locationFilter = document.getElementById(
+    "timelineLocationFilter",
+  ).value;
   const typeFilter = document.getElementById("timelineTypeFilter").value;
 
   const events = [];
   for (const evt of state.allTimeline) {
     if (personFilter && evt.personIds.indexOf(personFilter) === -1) continue;
-    if (locationFilter && evt.locationIds.indexOf(locationFilter) === -1) continue;
+    if (locationFilter && evt.locationIds.indexOf(locationFilter) === -1)
+      continue;
     if (typeFilter && evt.type !== typeFilter) continue;
     events.push(evt);
   }
@@ -100,7 +122,14 @@ export function renderTimeline() {
   let html = "";
   for (const item of events) {
     html += '<div class="timeline-event certainty-' + item.certainty + '">';
-    html += '<div class="timeline-time">' + formatDate(item.time) + '&nbsp;&middot;&nbsp;<span class="badge badge-' + certaintyBadgeClass(item.certainty) + '">' + item.certainty + "</span></div>";
+    html +=
+      '<div class="timeline-time">' +
+      formatDate(item.time) +
+      '&nbsp;&middot;&nbsp;<span class="badge badge-' +
+      certaintyBadgeClass(item.certainty) +
+      '">' +
+      item.certainty +
+      "</span></div>";
     html += "<h3>" + item.title + "</h3>";
     html += "<p>" + item.description + "</p>";
 
@@ -108,14 +137,24 @@ export function renderTimeline() {
     for (const locationId of item.locationIds) {
       const evtLoc = findLocationById(locationId);
       // Original: eventLocationNames.push(evtLoc || item.locationIds[el]); → "[object Object]"
-      eventLocationNames.push(evtLoc ? evtLoc.id + " - " + evtLoc.name : locationId);
+      eventLocationNames.push(
+        evtLoc ? evtLoc.id + " - " + evtLoc.name : locationId,
+      );
     }
     if (eventLocationNames.length > 0) {
-      html += '<p class="evidence-meta">Location: ' + eventLocationNames.join(", ") + "</p>";
+      html +=
+        '<p class="evidence-meta">Location: ' +
+        eventLocationNames.join(", ") +
+        "</p>";
     }
 
     for (const evidenceId of item.evidenceIds) {
-      html += '<button type="button" class="evidence-link-btn" data-evidence-id="' + evidenceId + '">View ' + evidenceId + "</button>";
+      html +=
+        '<button type="button" class="evidence-link-btn" data-evidence-id="' +
+        evidenceId +
+        '">View ' +
+        evidenceId +
+        "</button>";
     }
     html += "</div>";
   }
@@ -133,8 +172,16 @@ export function renderTimeline() {
 }
 
 export const setupTimelineListeners = () => {
-  document.getElementById("timelineOrder").addEventListener("change", renderTimeline);
-  document.getElementById("timelinePersonFilter").addEventListener("change", renderTimeline);
-  document.getElementById("timelineLocationFilter").addEventListener("change", renderTimeline);
-  document.getElementById("timelineTypeFilter").addEventListener("change", renderTimeline);
+  document
+    .getElementById("timelineOrder")
+    .addEventListener("change", renderTimeline);
+  document
+    .getElementById("timelinePersonFilter")
+    .addEventListener("change", renderTimeline);
+  document
+    .getElementById("timelineLocationFilter")
+    .addEventListener("change", renderTimeline);
+  document
+    .getElementById("timelineTypeFilter")
+    .addEventListener("change", renderTimeline);
 };

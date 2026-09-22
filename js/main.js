@@ -1,8 +1,15 @@
 import { state, viewRendered } from "./state.js";
 import { loadAllData } from "./data.js";
-import { loadBookmarksFromStorage, loadNoteAsync, loadNotesFromStorage } from "./storage.js";
+import {
+  loadBookmarksFromStorage,
+  loadNoteAsync,
+  loadNotesFromStorage,
+} from "./storage.js";
 import { renderDashboard } from "./views/dashboard.js";
-import { renderEvidenceList, setupEvidenceListeners } from "./views/evidence.js";
+import {
+  renderEvidenceList,
+  setupEvidenceListeners,
+} from "./views/evidence.js";
 import { renderLocations, renderPeople } from "./views/people.js";
 import { renderTimeline, setupTimelineListeners } from "./views/timeline.js";
 import { renderWorkspace } from "./views/workspace.js";
@@ -13,7 +20,13 @@ import { renderWorkspace } from "./views/workspace.js";
 
 function handleHashChange() {
   let hash = window.location.hash.replace("#", "");
-  const validViews = ["dashboard", "evidence", "people", "timeline", "workspace"];
+  const validViews = [
+    "dashboard",
+    "evidence",
+    "people",
+    "timeline",
+    "workspace",
+  ];
   if (validViews.indexOf(hash) === -1) {
     hash = "dashboard";
   }
