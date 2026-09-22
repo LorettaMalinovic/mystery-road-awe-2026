@@ -5,7 +5,7 @@
 // =============================================================================
 
 import { initApp } from "./js/main.js";
-import { navigateTo } from "./js/router.js";
+import { navigateTo } from "./js/router.ts";
 import {
   closeEvidenceDetail,
   handleSortChange,
