@@ -258,6 +258,10 @@
   <p>Project ReMotion Investigation Portal &mdash; Research Center AI, Software and IT-Security of HCW (fictional case study)</p>
 </footer>
 
-<script src="app.js"></script>
+<!-- Demo 1: Classic-Script auskommentiert, ES-Modul statt dessen.
+     Module haben eigenen Scope (onclick braucht window.navigateTo), sind deferred und immer strict.
+     file:// reicht nicht — fetch + Module brauchen HTTP. -->
+<!-- <script src="app.js"></script> -->
+<script type="module" src="app.js"></script>
 </body>
 </html>
