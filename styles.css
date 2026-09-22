@@ -45,7 +45,7 @@ h1, h2, h3, h4 {
 
 /* Header */
 .app-header {
-  background: linear-gradient(135deg, var(--color-header), var(--color-header-2));
+  background: linear-gradient(135deg, var(--color-header), var(--color-header-2)); 
   color: #fff;
   position: sticky;
   top: 0;

@@ -68,7 +68,6 @@ ticked. The table above is just a fast overview, tick the boxes inside each demo
 **Questions** (depend on the tasks above)
 
 - [ ] What problem does a package manager actually solve that "download the library and put it in a folder yourself" doesn't? Be specific.
-      -> 
 
 - [ ] What's the difference between `dependencies` and `devDependencies` in `package.json`? Which
       category will Vite, your linter/formatter, and TypeScript belong to, and why?
