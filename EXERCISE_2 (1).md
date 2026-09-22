@@ -56,8 +56,13 @@ ticked. The table above is just a fast overview, tick the boxes inside each demo
 **Tasks**
 
 - [x] Choose **npm** or **pnpm** and record why you picked it over the other.
+![alt text](image.png)
+
 - [x] Initialize `package.json` for the project (name, version, description, etc. filled in properly).
+-> npm init-y | package.json 
+
 - [x] Add a `.gitignore` entry for `node_modules` (and any other tool output you generate in later demos, e.g. `dist/`).
+
 - [x] Install one real dependency (you'll add more in later demos) and show the resulting lockfile (`package-lock.json` or `pnpm-lock.yaml`) committed to the repo.
 
 **Questions** (depend on the tasks above)
