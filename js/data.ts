@@ -1,4 +1,5 @@
-import { state } from "./state.js";
+import { state } from "./state.ts";
+import type { Evidence, Person, Location, TimelineEvent, CaseData } from "./types.ts";
 import {
   applyStoredBookmarkFlags,
   populateEvidenceDropdowns,
@@ -8,14 +9,14 @@ import { populateTimelineDropdowns, renderTimeline } from "./views/timeline.js";
 import { populateHypothesisDropdowns } from "./views/workspace.js";
 import { renderDashboard } from "./views/dashboard.js";
 
-const showLoadingOverlay = (msg) => {
+const showLoadingOverlay = (msg: string): void => {
   const overlay = document.getElementById("loadingOverlay");
   const text = document.getElementById("loadingText");
   if (text) text.textContent = msg;
   if (overlay) overlay.classList.remove("hidden");
 };
 
-const hideLoadingStep = () => {
+const hideLoadingStep = (): void => {
   state.loadingStepsRemaining--;
   if (state.loadingStepsRemaining <= 0) {
     const overlay = document.getElementById("loadingOverlay");
@@ -23,65 +24,36 @@ const hideLoadingStep = () => {
   }
 };
 
-const populateAllDropdowns = () => {
+const populateAllDropdowns = (): void => {
   populateEvidenceDropdowns();
   populateTimelineDropdowns();
   populateHypothesisDropdowns();
 };
 
-const readJson = async (url) => {
+// T bestimmt jede Aufrufstelle selbst
+const readJson = async <T>(url: string): Promise<T> => {
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error("Failed to load " + url + " (" + res.status + ")");
   }
-  return res.json();
+  return (await res.json()) as T;
 };
 
-// Demo 9: Original nested .then() chain (commented out, same sequential order kept):
-// function loadCorePeopleAndLocations() {
-//   return fetch("data/case.json").then(function (caseRes) {
-//     return caseRes.json().then(function (caseJson) {
-//       caseData = caseJson;
-//       return fetch("data/people.json").then(function (peopleRes) {
-//         return peopleRes.json().then(function (peopleJson) {
-//           allPeople = peopleJson;
-//           return fetch("data/locations.json").then(function (locationsRes) {
-//             return locationsRes.json().then(function (locationsJson) {
-//               allLocations = locationsJson;
-//               hideLoadingStep();
-//               renderDashboard();
-//               populateAllDropdowns();
-//             });
-//           });
-//         });
-//       });
-//     });
-//   });
-// }
-
-export async function loadCorePeopleAndLocations() {
-  const caseJson = await readJson("data/case.json");
-  state.caseData = caseJson;
-
-  const peopleJson = await readJson("data/people.json");
-  state.allPeople = peopleJson;
-
-  const locationsJson = await readJson("data/locations.json");
-  state.allLocations = locationsJson;
+export async function loadCorePeopleAndLocations(): Promise<void> {
+  state.caseData = await readJson<CaseData>("data/case.json");
+  state.allPeople = await readJson<Person[]>("data/people.json");
+  state.allLocations = await readJson<Location[]>("data/locations.json");
 
   hideLoadingStep();
   renderDashboard();
   populateAllDropdowns();
 }
 
-export async function loadEvidenceData() {
+export async function loadEvidenceData(): Promise<void> {
   try {
-    const data = await readJson("data/evidence.json");
-    state.allEvidence = data;
+    state.allEvidence = await readJson<Evidence[]>("data/evidence.json");
     applyStoredBookmarkFlags();
-    // Demo 2: Original: filteredEvidence = allEvidence;  (gleiche Referenz → .sort() mutiert allEvidence)
     state.filteredEvidence = state.allEvidence.slice();
-    // Demo 3: Original ließ evidenceViewLoading forever true → Spinner blieb.
     state.evidenceViewLoading = false;
     renderDashboard();
     populateAllDropdowns();
@@ -93,10 +65,9 @@ export async function loadEvidenceData() {
   }
 }
 
-export async function loadTimelineData() {
+export async function loadTimelineData(): Promise<void> {
   try {
-    const data = await readJson("data/timeline.json");
-    state.allTimeline = data;
+    state.allTimeline = await readJson<TimelineEvent[]>("data/timeline.json");
     renderDashboard();
     if (state.currentPage === "timeline") renderTimeline();
     populateAllDropdowns();
@@ -107,7 +78,7 @@ export async function loadTimelineData() {
   }
 }
 
-export async function loadAllData() {
+export async function loadAllData(): Promise<void> {
   showLoadingOverlay("Loading case file…");
   state.loadingStepsRemaining = 2;
   try {
