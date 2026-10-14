@@ -1,11 +1,12 @@
 import type { Location } from "../../../js/types";
+import { Card } from "./Card";
 
 interface LocationCardProps {
   location: Location;
 }
 
 export const LocationCard = ({ location }: LocationCardProps) => (
-  <div className="location-card">
+  <Card className="location-card">
     <h3>
       {location.id} &mdash; {location.name}
     </h3>
@@ -18,5 +19,5 @@ export const LocationCard = ({ location }: LocationCardProps) => (
         <li key={item}>{item}</li>
       ))}
     </ul>
-  </div>
+  </Card>
 );

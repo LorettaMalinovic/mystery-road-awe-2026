@@ -1,4 +1,5 @@
 import type { Person } from "../../../js/types";
+import { Card } from "./Card";
 import { EvidenceCount } from "./EvidenceCount";
 
 interface PersonCardProps {
@@ -7,7 +8,7 @@ interface PersonCardProps {
 }
 
 export const PersonCard = ({ person, evidenceCount }: PersonCardProps) => (
-  <div className="person-card">
+  <Card className="person-card">
     <div className="person-card-header">
       <img className="person-avatar" src={person.avatar} alt={`Portrait of ${person.name}`} />
       <div>
@@ -25,5 +26,5 @@ export const PersonCard = ({ person, evidenceCount }: PersonCardProps) => (
     </ul>
     <div className="person-statement">&ldquo;{person.statement}&rdquo;</div>
     <EvidenceCount count={evidenceCount} />
-  </div>
+  </Card>
 );

@@ -2,6 +2,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { DashboardPage } from "./pages/DashboardPage";
 import { PeoplePage } from "./pages/PeoplePage";
+import { TimelinePage } from "./pages/TimelinePage";
 import { StubPage } from "./pages/StubPage";
 import { useHashView } from "./useHashView";
 import { useCaseData, type LoadState } from "./useCaseData";
@@ -20,7 +21,7 @@ const renderPage = (view: ViewId, loaded: LoadState) => {
     case "people":
       return <PeoplePage data={data} />;
     case "timeline":
-      return <StubPage title="Investigation Timeline" />;
+      return <TimelinePage data={data} />;
     case "workspace":
       return <StubPage title="Investigator Workspace" />;
   }
