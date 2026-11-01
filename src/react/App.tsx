@@ -1,9 +1,10 @@
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { DashboardPage } from "./pages/DashboardPage";
+import { EvidencePage } from "./pages/EvidencePage";
 import { PeoplePage } from "./pages/PeoplePage";
 import { TimelinePage } from "./pages/TimelinePage";
-import { StubPage } from "./pages/StubPage";
+import { WorkspacePage } from "./pages/WorkspacePage";
 import { useHashView } from "./useHashView";
 import { useCaseData, type LoadState } from "./useCaseData";
 import type { ViewId } from "./routes";
@@ -17,13 +18,13 @@ const renderPage = (view: ViewId, loaded: LoadState) => {
     case "dashboard":
       return <DashboardPage data={data} />;
     case "evidence":
-      return <StubPage title="Evidence Catalogue" />;
+      return <EvidencePage data={data} />;
     case "people":
       return <PeoplePage data={data} />;
     case "timeline":
       return <TimelinePage data={data} />;
     case "workspace":
-      return <StubPage title="Investigator Workspace" />;
+      return <WorkspacePage data={data} />;
   }
 };
 
