@@ -4,19 +4,11 @@ import { EvidenceCard } from "./EvidenceCard";
 
 interface EvidenceListProps {
   items: Evidence[];
-  bookmarkedIds: readonly string[];
   notes: NotesStore;
-  onToggleBookmark: (id: string) => void;
   onSaveNote: (id: string, text: string) => void;
 }
 
-export const EvidenceList = ({
-  items,
-  bookmarkedIds,
-  notes,
-  onToggleBookmark,
-  onSaveNote,
-}: EvidenceListProps) => {
+export const EvidenceList = ({ items, notes, onSaveNote }: EvidenceListProps) => {
   if (items.length === 0) {
     return <p>No evidence matches the current filters.</p>;
   }
@@ -27,9 +19,7 @@ export const EvidenceList = ({
         <EvidenceCard
           key={ev.id}
           evidence={ev}
-          isBookmarked={bookmarkedIds.includes(ev.id)}
           savedNote={notes[ev.id] ?? ""}
-          onToggleBookmark={onToggleBookmark}
           onSaveNote={onSaveNote}
         />
       ))}

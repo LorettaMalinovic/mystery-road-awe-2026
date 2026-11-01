@@ -6,50 +6,33 @@ import { EvidencePage } from "./pages/EvidencePage";
 import { PeoplePage } from "./pages/PeoplePage";
 import { TimelinePage } from "./pages/TimelinePage";
 import { WorkspacePage } from "./pages/WorkspacePage";
+import { BookmarksProvider } from "./BookmarksContext";
 import { useHashView } from "./useHashView";
 import { useCaseData, type LoadState } from "./useCaseData";
-import { loadBookmarks, saveBookmarks, toggleBookmark } from "./bookmarks";
 import { loadNotes, saveNotes, withNote, type NotesStore } from "./notes";
 import type { ViewId } from "./routes";
 
-interface SharedState {
-  bookmarkedIds: readonly string[];
+interface NotesProps {
   notes: NotesStore;
-  onToggleBookmark: (id: string) => void;
   onSaveNote: (id: string, text: string) => void;
 }
 
-const renderPage = (view: ViewId, loaded: LoadState, shared: SharedState) => {
+const renderPage = (view: ViewId, loaded: LoadState, noteProps: NotesProps) => {
   if (loaded.status === "loading") return <p>Loading case file...</p>;
   if (loaded.status === "error") return <p>Could not load the case: {loaded.message}</p>;
   const data = loaded.data;
 
   switch (view) {
     case "dashboard":
-      return <DashboardPage data={data} bookmarkedIds={shared.bookmarkedIds} />;
+      return <DashboardPage data={data} />;
     case "evidence":
-      return (
-        <EvidencePage
-          data={data}
-          bookmarkedIds={shared.bookmarkedIds}
-          notes={shared.notes}
-          onToggleBookmark={shared.onToggleBookmark}
-          onSaveNote={shared.onSaveNote}
-        />
-      );
+      return <EvidencePage data={data} notes={noteProps.notes} onSaveNote={noteProps.onSaveNote} />;
     case "people":
       return <PeoplePage data={data} />;
     case "timeline":
       return <TimelinePage data={data} />;
     case "workspace":
-      return (
-        <WorkspacePage
-          data={data}
-          bookmarkedIds={shared.bookmarkedIds}
-          notes={shared.notes}
-          onToggleBookmark={shared.onToggleBookmark}
-        />
-      );
+      return <WorkspacePage data={data} notes={noteProps.notes} />;
   }
 };
 
@@ -57,36 +40,23 @@ export const App = () => {
   const currentView = useHashView();
   const loaded = useCaseData();
 
-  // Demo 5: the ONE owner of bookmark and note state. App is the lowest common ancestor of
-  // Dashboard (reads), Evidence (reads + changes) and Workspace (reads + changes).
-  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>(loadBookmarks);
+  // Bookmarks live in BookmarksProvider now. Notes stay as plain lifted state + props,
+  // because only two pages use them and they are only 2 layers deep.
   const [notes, setNotes] = useState<NotesStore>(loadNotes);
 
-  // Demo 6: these functions go DOWN as props. Children can only ask, App does the change.
-  const handleToggleBookmark = (id: string) => {
-    const next = toggleBookmark(bookmarkedIds, id); // new array
-    setBookmarkedIds(next);
-    saveBookmarks(next);
-  };
-
   const handleSaveNote = (id: string, text: string) => {
-    const next = withNote(notes, id, text); // new object
+    const next = withNote(notes, id, text);
     setNotes(next);
     saveNotes(next);
   };
 
-  const shared: SharedState = {
-    bookmarkedIds,
-    notes,
-    onToggleBookmark: handleToggleBookmark,
-    onSaveNote: handleSaveNote,
-  };
-
   return (
-    <>
+    <BookmarksProvider>
       <Header currentView={currentView} />
-      <main className="app-main">{renderPage(currentView, loaded, shared)}</main>
+      <main className="app-main">
+        {renderPage(currentView, loaded, { notes, onSaveNote: handleSaveNote })}
+      </main>
       <Footer />
-    </>
+    </BookmarksProvider>
   );
 };

@@ -1,23 +1,22 @@
 import { useState } from "react";
 import type { Evidence } from "../../../js/types";
 import { formatDate, relevanceBadgeClass, statusBadgeClass } from "../format";
+import { useBookmarks } from "../BookmarksContext";
 import { Card } from "./Card";
 
 interface EvidenceCardProps {
   evidence: Evidence;
-  isBookmarked: boolean;
   savedNote: string;
-  onToggleBookmark: (id: string) => void;
   onSaveNote: (id: string, text: string) => void;
 }
 
 export const EvidenceCard = ({
   evidence,
-  isBookmarked,
   savedNote,
-  onToggleBookmark,
   onSaveNote,
 }: EvidenceCardProps) => {
+  const { bookmarkedIds, onToggleBookmark } = useBookmarks();
+  const isBookmarked = bookmarkedIds.includes(evidence.id);
   // the text being typed is local UI state, only the saved note lives in App
   const [draft, setDraft] = useState(savedNote);
 

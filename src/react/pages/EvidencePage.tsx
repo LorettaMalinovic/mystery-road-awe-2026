@@ -8,23 +8,13 @@ import { EvidenceList } from "../components/EvidenceList";
 
 interface EvidencePageProps {
   data: CaseFile;
-  bookmarkedIds: readonly string[];
   notes: NotesStore;
-  onToggleBookmark: (id: string) => void;
   onSaveNote: (id: string, text: string) => void;
 }
 
-export const EvidencePage = ({
-  data,
-  bookmarkedIds,
-  notes,
-  onToggleBookmark,
-  onSaveNote,
-}: EvidencePageProps) => {
-  // Demo 7: 7 useState calls became ONE reducer.
+export const EvidencePage = ({ data, notes, onSaveNote }: EvidencePageProps) => {
   const [filters, dispatch] = useReducer(evidenceFiltersReducer, initialFilters);
 
-  // still DERIVED: computed from the full list + filters on every render
   const visible = selectEvidence(data.evidence, filters, data.people);
 
   return (
@@ -42,13 +32,7 @@ export const EvidencePage = ({
       <p className="hint-text">
         Showing {visible.length} of {data.evidence.length} items
       </p>
-      <EvidenceList
-        items={visible}
-        bookmarkedIds={bookmarkedIds}
-        notes={notes}
-        onToggleBookmark={onToggleBookmark}
-        onSaveNote={onSaveNote}
-      />
+      <EvidenceList items={visible} notes={notes} onSaveNote={onSaveNote} />
     </section>
   );
 };

@@ -1,23 +1,19 @@
 import type { CaseFile } from "../useCaseData";
 import type { NotesStore } from "../notes";
+import { useBookmarks } from "../BookmarksContext";
 import { BookmarksList } from "../components/BookmarksList";
 import { NotesList, type NoteEntry } from "../components/NotesList";
 import { HypothesisForm } from "../components/HypothesisForm";
 
 interface WorkspacePageProps {
   data: CaseFile;
-  bookmarkedIds: readonly string[];
   notes: NotesStore;
-  onToggleBookmark: (id: string) => void;
 }
 
-export const WorkspacePage = ({
-  data,
-  bookmarkedIds,
-  notes,
-  onToggleBookmark,
-}: WorkspacePageProps) => {
-  // DERIVED from the single source of truth (bookmarkedIds in App), not stored again
+export const WorkspacePage = ({ data, notes }: WorkspacePageProps) => {
+  const { bookmarkedIds, onToggleBookmark } = useBookmarks();
+
+  // DERIVED from the single source of truth (the bookmarks context), not stored again
   const bookmarked = data.evidence.filter((ev) => bookmarkedIds.includes(ev.id));
 
   const entries: NoteEntry[] = Object.entries(notes).map(([evidenceId, text]) => ({
