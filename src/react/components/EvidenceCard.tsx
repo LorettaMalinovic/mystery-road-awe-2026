@@ -57,7 +57,11 @@ export const EvidenceCard = ({
         <button
           type="button"
           className="btn btn-small btn-secondary"
-          onClick={() => onSaveNote(evidence.id, draft)}
+          disabled={draft.trim() === savedNote}
+          onClick={() => {
+            onSaveNote(evidence.id, draft);
+            setDraft(draft.trim());
+          }}
         >
           Save note
         </button>
@@ -65,3 +69,4 @@ export const EvidenceCard = ({
     </Card>
   );
 };
+
