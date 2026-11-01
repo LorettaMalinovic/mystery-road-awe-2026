@@ -8,6 +8,7 @@ import { TimelinePage } from "./pages/TimelinePage";
 import { WorkspacePage } from "./pages/WorkspacePage";
 import { BookmarksProvider } from "./BookmarksContext";
 import { useHashView } from "./useHashView";
+import { useDocumentTitle } from "./useDocumentTitle";
 import { useCaseData, type LoadState } from "./useCaseData";
 import { loadNotes, saveNotes, withNote, type NotesStore } from "./notes";
 import type { ViewId } from "./routes";
@@ -38,6 +39,7 @@ const renderPage = (view: ViewId, loaded: LoadState, noteProps: NotesProps) => {
 
 export const App = () => {
   const currentView = useHashView();
+  useDocumentTitle(currentView);
   const loaded = useCaseData();
 
   // Bookmarks live in BookmarksProvider now. Notes stay as plain lifted state + props,
@@ -60,3 +62,4 @@ export const App = () => {
     </BookmarksProvider>
   );
 };
+
