@@ -1,6 +1,15 @@
-import { defineConfig } from "vite"; //importiert eine Hilfsfunktion aus Vite - Autovervollständigung/Typprüfung im Editor für die Config-Optionen
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  //die Datei exportiert genau ein Ding — die Konfiguration selbst.
-  root: ".", //wo der index.html (der Entry-Point) zu finden ist. "." heißt "aktuelles Verzeichnis"
+  root: ".",
+  plugins: [react()], // compiles JSX/TSX and enables React fast refresh
+  build: {
+    rollupOptions: {
+      input: {
+        main: "index.html", // vanilla app
+        react: "react.html", // React app
+      },
+    },
+  },
 });

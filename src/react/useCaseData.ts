@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { CaseData, Evidence, Person, Location, TimelineEvent } from "../../js/types";
 
+const API_BASE = "http://localhost:3001/api"; // dev backend, see README, change 1
+
 export interface CaseFile {
   caseData: CaseData;
   evidence: Evidence[];
@@ -26,11 +28,11 @@ export const useCaseData = (): LoadState => {
   useEffect(() => {
     let cancelled = false; // StrictMode runs effects twice in dev
     Promise.all([
-      readJson<CaseData>("data/case.json"),
-      readJson<Evidence[]>("data/evidence.json"),
-      readJson<Person[]>("data/people.json"),
-      readJson<Location[]>("data/locations.json"),
-      readJson<TimelineEvent[]>("data/timeline.json"),
+      readJson<CaseData>(`${API_BASE}/case`),
+      readJson<Evidence[]>(`${API_BASE}/evidence`), //change 2
+      readJson<Person[]>(`${API_BASE}/people`),
+      readJson<Location[]>(`${API_BASE}/locations`),
+      readJson<TimelineEvent[]>(`${API_BASE}/timeline`),
     ])
       .then(([caseData, evidence, people, locations, timeline]) => {
         if (!cancelled) {
@@ -49,3 +51,4 @@ export const useCaseData = (): LoadState => {
 
   return state;
 };
+
