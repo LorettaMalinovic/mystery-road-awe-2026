@@ -1,5 +1,4 @@
 import type { CaseFile } from "../useCaseData";
-import { readBookmarkIds } from "../bookmarks";
 import { StatCard } from "../components/StatCard";
 import { ReviewProgress } from "../components/ReviewProgress";
 import { RecentEvidenceList } from "../components/RecentEvidenceList";
@@ -7,13 +6,14 @@ import { RecentTimelineList } from "../components/RecentTimelineList";
 
 interface DashboardPageProps {
   data: CaseFile;
+  bookmarkedIds: readonly string[];
 }
 
-export const DashboardPage = ({ data }: DashboardPageProps) => {
+export const DashboardPage = ({ data, bookmarkedIds }: DashboardPageProps) => {
   const { caseData, evidence, people, locations, timeline } = data;
 
-  // derived values: calculated on every render, no render-cache flag
-  const bookmarkCount = readBookmarkIds().length;
+  // derived values: calculated on every render, no render-cache flag, no second copy in storage
+  const bookmarkCount = bookmarkedIds.length;
   const reviewedCount = evidence.filter((e) => e.status.toLowerCase() === "reviewed").length;
   const progressPct =
     evidence.length === 0 ? 0 : Math.round((reviewedCount / evidence.length) * 100);

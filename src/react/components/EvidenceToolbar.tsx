@@ -1,12 +1,25 @@
 import type { Evidence, Location, Person } from "../../../js/types";
+import { isSortKey, type EvidenceFilters, type FilterKey, type SortKey } from "../evidenceFilters";
 
 interface EvidenceToolbarProps {
+  filters: EvidenceFilters;
   evidence: Evidence[];
   people: Person[];
   locations: Location[];
+  onFilter: (key: FilterKey, value: string) => void;
+  onSort: (sort: SortKey) => void;
+  onClear: () => void;
 }
 
-export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbarProps) => {
+export const EvidenceToolbar = ({
+  filters,
+  evidence,
+  people,
+  locations,
+  onFilter,
+  onSort,
+  onClear,
+}: EvidenceToolbarProps) => {
   const types = [...new Set(evidence.map((ev) => ev.type.toLowerCase()))];
 
   return (
@@ -20,12 +33,18 @@ export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbar
           id="evidenceSearch"
           placeholder="Search evidence by title, summary, or tag..."
           autoComplete="off"
+          value={filters.search}
+          onChange={(e) => onFilter("search", e.target.value)}
         />
 
         <label htmlFor="filterType" className="visually-hidden">
           Filter by type
         </label>
-        <select id="filterType">
+        <select
+          id="filterType"
+          value={filters.type}
+          onChange={(e) => onFilter("type", e.target.value)}
+        >
           <option value="">All types</option>
           {types.map((type) => (
             <option key={type} value={type}>
@@ -37,7 +56,11 @@ export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbar
         <label htmlFor="filterPerson" className="visually-hidden">
           Filter by person
         </label>
-        <select id="filterPerson">
+        <select
+          id="filterPerson"
+          value={filters.person}
+          onChange={(e) => onFilter("person", e.target.value)}
+        >
           <option value="">All people</option>
           {people.map((person) => (
             <option key={person.id} value={person.id}>
@@ -49,7 +72,11 @@ export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbar
         <label htmlFor="filterLocation" className="visually-hidden">
           Filter by location
         </label>
-        <select id="filterLocation">
+        <select
+          id="filterLocation"
+          value={filters.location}
+          onChange={(e) => onFilter("location", e.target.value)}
+        >
           <option value="">All locations</option>
           {locations.map((location) => (
             <option key={location.id} value={location.id}>
@@ -62,7 +89,11 @@ export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbar
         <label htmlFor="filterStatus" className="visually-hidden">
           Filter by status
         </label>
-        <select id="filterStatus">
+        <select
+          id="filterStatus"
+          value={filters.status}
+          onChange={(e) => onFilter("status", e.target.value)}
+        >
           <option value="">All statuses</option>
           <option value="unreviewed">Unreviewed</option>
           <option value="reviewed">Reviewed</option>
@@ -72,7 +103,11 @@ export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbar
         <label htmlFor="filterRelevance" className="visually-hidden">
           Filter by relevance
         </label>
-        <select id="filterRelevance">
+        <select
+          id="filterRelevance"
+          value={filters.relevance}
+          onChange={(e) => onFilter("relevance", e.target.value)}
+        >
           <option value="">All relevance</option>
           <option value="unknown">Unknown</option>
           <option value="relevant">Relevant</option>
@@ -82,14 +117,20 @@ export const EvidenceToolbar = ({ evidence, people, locations }: EvidenceToolbar
         <label htmlFor="sortEvidence" className="visually-hidden">
           Sort evidence
         </label>
-        <select id="sortEvidence">
+        <select
+          id="sortEvidence"
+          value={filters.sort}
+          onChange={(e) => {
+            if (isSortKey(e.target.value)) onSort(e.target.value);
+          }}
+        >
           <option value="date-desc">Newest first</option>
           <option value="date-asc">Oldest first</option>
           <option value="title-asc">Title (A-Z)</option>
           <option value="title-desc">Title (Z-A)</option>
         </select>
 
-        <button type="button" className="btn btn-secondary">
+        <button type="button" className="btn btn-secondary" onClick={onClear}>
           Clear filters
         </button>
       </div>

@@ -1,33 +1,49 @@
 import type { CaseFile } from "../useCaseData";
+import type { NotesStore } from "../notes";
 import { BookmarksList } from "../components/BookmarksList";
-import { NotesList } from "../components/NotesList";
+import { NotesList, type NoteEntry } from "../components/NotesList";
 import { HypothesisForm } from "../components/HypothesisForm";
 
 interface WorkspacePageProps {
   data: CaseFile;
+  bookmarkedIds: readonly string[];
+  notes: NotesStore;
+  onToggleBookmark: (id: string) => void;
 }
 
-export const WorkspacePage = ({ data }: WorkspacePageProps) => (
-  <section className="view active">
-    <h2>Investigator Workspace</h2>
+export const WorkspacePage = ({
+  data,
+  bookmarkedIds,
+  notes,
+  onToggleBookmark,
+}: WorkspacePageProps) => {
+  // DERIVED from the single source of truth (bookmarkedIds in App), not stored again
+  const bookmarked = data.evidence.filter((ev) => bookmarkedIds.includes(ev.id));
 
-    <div className="workspace-grid">
-      <div className="workspace-col">
-        <h3>Bookmarked Evidence</h3>
-        {/* empty for now: bookmark state is lifted in Demo 5 */}
-        <BookmarksList items={[]} />
+  const entries: NoteEntry[] = Object.entries(notes).map(([evidenceId, text]) => ({
+    evidenceId,
+    title: data.evidence.find((ev) => ev.id === evidenceId)?.title ?? "(unknown evidence)",
+    text,
+  }));
+
+  return (
+    <section className="view active">
+      <h2>Investigator Workspace</h2>
+
+      <div className="workspace-grid">
+        <div className="workspace-col">
+          <h3>Bookmarked Evidence</h3>
+          <BookmarksList items={bookmarked} onRemove={onToggleBookmark} />
+        </div>
+
+        <div className="workspace-col">
+          <h3>Personal Notes</h3>
+          <p className="hint-text">Notes are written on the evidence cards in the Evidence view.</p>
+          <NotesList entries={entries} />
+        </div>
       </div>
 
-      <div className="workspace-col">
-        <h3>Personal Notes</h3>
-        <p className="hint-text">
-          Notes are attached to whichever evidence item is currently open in the Evidence view.
-        </p>
-        {/* empty for now: notes are wired in a later step */}
-        <NotesList entries={[]} />
-      </div>
-    </div>
-
-    <HypothesisForm people={data.people} evidence={data.evidence} />
-  </section>
-);
+      <HypothesisForm people={data.people} evidence={data.evidence} />
+    </section>
+  );
+};
