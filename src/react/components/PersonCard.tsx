@@ -28,3 +28,4 @@ export const PersonCard = ({ person, evidenceCount }: PersonCardProps) => (
     <EvidenceCount count={evidenceCount} />
   </Card>
 );
+
