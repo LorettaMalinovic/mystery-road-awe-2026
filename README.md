@@ -56,3 +56,21 @@ be enabled. The layout targets common desktop and tablet widths.
 This is an existing brownfield application, not a fresh scaffold. It works for everyday use, but
 you should expect to find rough edges, inconsistent patterns, and a handful of bugs as you work
 with it — that discovery process is part of the course.
+
+## Dev backend (Exercise 6)
+
+A small read-only Node/Express server serves the 5 case files as REST endpoints.
+It runs **locally in development only**. It is NOT part of the GitHub Pages deploy workflow.
+
+Start it in a second terminal, next to `npm run dev`:
+
+    npm run server
+
+Endpoints (port 3001): `/api/case`, `/api/evidence`, `/api/people`, `/api/locations`, `/api/timeline`
+
+Test controls on every endpoint:
+
+- `?delay=2000` waits 2000 ms before answering (max 10000). Or set `API_DELAY_MS` for all endpoints.
+- `?fail=1` returns a 500 error with a JSON message.
+
+Example: `http://localhost:3001/api/evidence?delay=3000`
