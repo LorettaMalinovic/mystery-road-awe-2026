@@ -14,3 +14,5 @@ export const statusBadgeClass = (status: string): string => {
   if (s === "flagged") return "badge-flagged";
   return "badge-unreviewed";
 };
+export const relevanceBadgeClass = (relevance: string): string =>
+  relevance.toLowerCase() === "relevant" ? "badge-relevant" : "badge-unreviewed";
